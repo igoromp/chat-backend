@@ -7,9 +7,15 @@ import Files from '../../files/model/files';
 class UserController {
 
     async store(req, res) {
-        const { body } = req;
-        const { originalname: filename, filename: filepath } = req.file;
-        const newUser = JSON.parse(body.user);
+        let { body } = req;
+        const {password ,confirmPassword} = body;
+        
+        if ( password !== confirmPassword ){
+            return res.status(400).json({message:'Password and confirm password not equals.'});
+        }
+        delete body.confirmPassword;
+
+        const newUser = body;
 
         const schema = Yup.object().shape({
             name: Yup.string().required(),
@@ -18,24 +24,19 @@ class UserController {
         });
 
         if (!(await schema.isValid(newUser))) {
-            return res.status(400).json({ error: 'Validation fails.' });
+            return res.status(400).json({ message: 'Validation fails.' });
         }
         const { email } = newUser;
-        const find = await User.findOne({ where : { email } } );
+        const find = await User.findOned({ where : { email } } );
 
         if( find ) {
-            return res.status(401).json({ error: 'User already exists.' });
+            return res.status(401).json({ message: 'User already exists.' });
         }
 
-        let file ;
-        if (filename && filepath ) {
-            file = await Files.create({name: filename, path: filepath});
-        }
-        const {id:fileId} = file.dataValues;
-        const {name } = await User.create({avatar_id:fileId, ...newUser});
-
+        const { name } = await User.create({...newUser});
+        
         const result = {
-            email, name, avatar:file.url
+            email, name
         }
 
         return res.json(result);
@@ -60,18 +61,18 @@ class UserController {
         })
 
         if(!(await schema.isValid(body))){
-            return res.status(400).json({ error: 'Validation fails.' });
+            return res.status(400).json({ message: 'Validation fails.' });
         }
 
         const { email , password } = body;
         const user = await User.findOne({ where : { email } });
         
         if(!user) {
-            return res.status(404).json({ error : 'User not found'})
+            return res.status(404).json({ message : 'User not found'})
         }
 
         if(!( await user.checkPassword( password ) )){
-            return res.status(401).json( { error : 'Password does not  match.'})
+            return res.status(401).json( { message : 'Password does not  match.'})
         }
 
         const { id , name } = user;

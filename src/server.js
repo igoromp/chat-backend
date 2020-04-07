@@ -2,8 +2,10 @@ import 'dotenv/config'
 import app from './app';
 import socketIo  from   'socket.io';
 
-const server = app.listen(process.env.APP_PORT_LISTEN, ()=>console.log('Server is running')).timeout=5000;
+const server = app.listen(process.env.APP_PORT_LISTEN, ()=>console.log('Server is running'));
 const websocket = socketIo(server);
+
+/* 
 
 const users = {
     'USER_1':{
@@ -28,5 +30,7 @@ websocket.on('connection', (socket)=>{
         console.log(socket.user)
         websocket.sockets.emit(socket.telefone, users[socket.user])
     })
-})
+}) 
+
+*/
 
