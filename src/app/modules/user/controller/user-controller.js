@@ -27,7 +27,7 @@ class UserController {
             return res.status(400).json({ message: 'Validation fails.' });
         }
         const { email } = newUser;
-        const find = await User.findOned({ where : { email } } );
+        const find = await User.findOne({ where : { email } } );
 
         if( find ) {
             return res.status(401).json({ message: 'User already exists.' });
@@ -39,7 +39,7 @@ class UserController {
             email, name
         }
 
-        return res.json(result);
+        return res.status(201).json(result);
     }
 
     async profile(req, res) {

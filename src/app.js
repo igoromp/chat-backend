@@ -10,45 +10,39 @@ class App {
     constructor(){
       console.log("INIT CLASS APP...");
       this.server = express();
+      
       this.initialize();
-
     }
 
     initialize() {
-     
       this.loadMiddlewares();
-      
+      this.loadRoutes();
+      this.exceptionHandler();
     }
 
     loadMiddlewares() {
-        console.log("CONFIG MIDDLEWARES....");
-        this.server.use(express.json());
-        this.server.use(express.urlencoded({ extended:true }))
-        this.server.use((req, res, next)=>{
-            res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from
-            res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-            next();
-        })
-        this.server.use('/files',express.static(resolve(__dirname,'..', 'tmp', 'uploads')));
-        this.loadRoutes();
-        this.exceptionHandler();
+      this.server.use(express.json());
+      this.server.use(express.urlencoded({ extended:true }))
+      this.server.use((req, res, next)=>{
+          res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from
+          res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+          next();
+      })
+      this.server.use('/files',express.static(resolve(__dirname,'..', 'tmp', 'uploads')));
     }
 
     loadRoutes() {
-        console.log("CONFIG ROUTES....");
-        this.server.use(routes)
+      this.server.use(routes)
     }
 
     exceptionHandler() {
-      console.log("CONFIG ERROR HANDLER....");
       this.server.use(async(err, req, res, next) => {
          return res.status(500).json({
-          error: 'Internal Server Error',
+          message: 'Internal Server Error',
           status: 500,
         }); 
 
       });
-
     }
 }
 
