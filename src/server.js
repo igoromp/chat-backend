@@ -1,10 +1,7 @@
 import 'dotenv/config'
-import app from './app';
-import socketIo  from   'socket.io';
+import App from './app';
 
-const server = app.listen(process.env.APP_PORT_LISTEN, ()=>console.log('Server is running'));
-const websocket = socketIo(server);
-
+const server = new App();
 const users = {
     'USER_1':{
         user:'Igor Oliveira',
@@ -16,18 +13,5 @@ const users = {
         ]
     }
 }
-
-websocket.on('connection', (socket)=>{
-    console.log('new user Connected ... LISTEN EVENTS');
-
-    socket.on("disconnect", ()=>{
-        console.log("Disconnected")
-    })
-
-    socket.on('EVENTS', (socket)=>{
-        console.log(socket.user)
-        websocket.sockets.emit(socket.telefone, users[socket.user])
-    })
-}) 
 
 

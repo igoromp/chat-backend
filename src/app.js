@@ -6,6 +6,9 @@ import {resolve} from 'path';
 import './database';
 import 'express-async-errors';
 
+import io  from   'socket.io';
+import ChatEvents from './app/modules/chat/chat-events';
+
 class App {
     constructor(){
       console.log("INIT CLASS APP...");
@@ -16,8 +19,10 @@ class App {
 
     initialize() {
       this.loadMiddlewares();
+      this.configWebSocket();
       this.loadRoutes();
       this.exceptionHandler();
+      
     }
 
     loadMiddlewares() {
@@ -44,6 +49,13 @@ class App {
 
       });
     }
+
+    configWebSocket() {
+      const server = this.server.listen(process.env.APP_PORT_LISTEN, () => console.log('Server is running'));
+      const websocket = io(server);
+
+      new ChatEvents(websocket);
+    }
 }
 
-export default new App().server;
+export default App;
