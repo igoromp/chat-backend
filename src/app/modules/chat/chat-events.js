@@ -35,10 +35,10 @@ export default class ChatEvents {
     register(socket) {
 
         socket.on('private_message',(privateMessage)=>{
-            const {ofUser, toUser, message} = privateMessage;
+            const {ofEmail, ofUser, toUser, message} = privateMessage;
             if (this.users[toUser]){
                 const {socket, token } = this.users[toUser];
-                socket.emit(token,{ message,user:ofUser });
+                socket.emit(token,{ message,user:ofUser, receivedEmail:ofEmail });
             }
         })
 
